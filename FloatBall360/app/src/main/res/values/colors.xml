@@ -3,6 +3,6 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="ballColor">#666600ff</color>
-    <color name="colorPrimary1">#c63F51B5</color>
+    <color name="ballColor">#999900ff</color>
+    <color name="colorPrimary1">#f63F51ff</color>
 </resources>

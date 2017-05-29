@@ -29,6 +29,7 @@ public class FloatManager {
 
     private float firstDownX;
     private float firstDownY;
+    private BottomView bottomView;
 
     private FloatManager(final Context context) {
         this.context = context;
@@ -73,6 +74,9 @@ public class FloatManager {
             @Override
             public void onClick(View v) {
                 Toast.makeText(context, "悬浮小球", Toast.LENGTH_SHORT).show();
+                windowManager.removeViewImmediate(floatBall);
+                showMenuView();
+                bottomView.startAnim();
             }
         });
     }
@@ -141,6 +145,10 @@ public class FloatManager {
         return context.getResources().getDisplayMetrics().widthPixels;
     }
 
+    private int getScreenHeight() {
+        return context.getResources().getDisplayMetrics().heightPixels;
+    }
+
     public static FloatManager getInstance(Context context) {
         if (floatManager == null) {
             synchronized (FloatManager.class) {
@@ -167,5 +175,27 @@ public class FloatManager {
         params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
         params.format = PixelFormat.RGBA_8888;//设置背景透明
         windowManager.addView(floatBall, params);
+    }
+
+    /**
+     * 显示悬浮球
+     */
+    public void showMenuView() {
+        bottomView = new BottomView(context);
+        params = new WindowManager.LayoutParams();
+        params.width = getScreenWidth();
+        params.height = getScreenHeight();
+        params.gravity = Gravity.BOTTOM | Gravity.LEFT;
+        params.x = 0;
+        params.y = 0;
+        params.type = WindowManager.LayoutParams.TYPE_PHONE;
+        //设置不获取焦点且不影响其他控件的点击事件
+        params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
+        params.format = PixelFormat.RGBA_8888;//设置背景透明
+        windowManager.addView(bottomView, params);
+    }
+
+    public void dissMissMenuView(){
+        windowManager.removeViewImmediate(bottomView);
     }
 }

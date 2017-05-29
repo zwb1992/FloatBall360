@@ -13,10 +13,4 @@
         android:onClick="create"
         android:text="创建小球"/>
 
-
-    <com.zwb.floatball360.SpeedBall
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        />
 </LinearLayout>

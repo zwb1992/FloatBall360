@@ -16,6 +16,8 @@ import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.Toast;
 
 /**
@@ -42,6 +44,7 @@ public class SpeedBall extends View {
     private float density;
     private GestureDetector gestureDetector;
     private int mOffsetY = 5;//y轴上的振幅
+    private int mCount = 36;//水面波动的次数
 
     public SpeedBall(Context context) {
         this(context, null);
@@ -90,13 +93,14 @@ public class SpeedBall extends View {
             @Override
             public boolean onDoubleTap(MotionEvent e) {
                 Toast.makeText(getContext(), "-----onDoubleTap------", Toast.LENGTH_SHORT).show();
-                singleAnim();
+                doubleAnim();
                 return false;
             }
 
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
                 Toast.makeText(getContext(), "-----onSingleTapConfirmed-----", Toast.LENGTH_SHORT).show();
+                singleAnim();
                 return false;
             }
         });
@@ -123,8 +127,14 @@ public class SpeedBall extends View {
         path.lineTo(0, height);
         path.lineTo(0, progressY);
         for (int i = 0; i < 5; i++) {
-            path.rQuadTo(5 * density, -mOffsetY * density, 10 * density, 0);
-            path.rQuadTo(5 * density, mOffsetY * density, 10 * density, 0);
+            //偏移量Y一正一副，看起来水面波动效果
+            if(mCount % 2 == 0) {
+                path.rQuadTo(5 * density, -mOffsetY * density, 10 * density, 0);
+                path.rQuadTo(5 * density, mOffsetY * density, 10 * density, 0);
+            }else {
+                path.rQuadTo(5 * density, mOffsetY * density, 10 * density, 0);
+                path.rQuadTo(5 * density, -mOffsetY * density, 10 * density, 0);
+            }
         }
         path.close();
         bitmapCanvas.drawPath(path, pathPaint);
@@ -139,9 +149,9 @@ public class SpeedBall extends View {
     }
 
     /**
-     * 单击动画
+     * 双击动画
      */
-    private void singleAnim() {
+    private void doubleAnim() {
         mOffsetY = 10;
         ValueAnimator animator = ValueAnimator.ofInt(0, progress);
         animator.setDuration(1000);
@@ -165,6 +175,39 @@ public class SpeedBall extends View {
 
             }
         });
+        animatorOffset.start();
+    }
+
+    /**
+     * 单击动画
+     */
+    private void singleAnim() {
+        mOffsetY = 10;
+        mCount = 36;
+        ValueAnimator animator = ValueAnimator.ofInt(0, mCount);
+        animator.setDuration(6000);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                SpeedBall.this.mCount = (int) animation.getAnimatedValue();
+                invalidate();
+
+            }
+        });
+        animator.setInterpolator(new LinearInterpolator());
+        animator.start();
+
+        ValueAnimator animatorOffset = ValueAnimator.ofInt(mOffsetY, 0);
+        animatorOffset.setDuration(6000);
+        animatorOffset.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                SpeedBall.this.mOffsetY = (int) animation.getAnimatedValue();
+                invalidate();
+
+            }
+        });
+        animatorOffset.setInterpolator(new DecelerateInterpolator());
         animatorOffset.start();
     }
 }
